@@ -5,8 +5,13 @@ messages = {
 
 def mask_iban(text):
     import re
-    iban_pattern = r'\b[A-Z]{2}\d{2}(?:\s?\d{4}){4,7}\b'
+    iban_pattern = r'\b[A-Z]{2}\d{2}(?:\s?\d{4}){4,7}\b' # IBAN desenini tanımlayan regex 
     masked_text = re.sub(iban_pattern, '**** **** **** ****', text)
+    return masked_text
+def mask_media(text):
+    import re
+    media_pattern = r'(?m)^\s<\sMedya\s+Dahil\s+Edilmedi\s>\s\n?' # medya mesajlarını tanımlayan desen
+    masked_text = re.sub(media_pattern, ' ', text)
     return masked_text
 
 
@@ -47,6 +52,7 @@ def sanitize_messages(messages):
     for author, msgs in messages.items():
         sanitized_msgs = [mask_iban(msg) for msg in msgs]
         sanitized[author] = sanitized_msgs
+        sanitized_msgs = [mask_media(msg) for msg in sanitized_msgs]
     return sanitized
 if __name__ == "__main__":    
     dir = input("Lütfen veri dosyasının konumunu giriniz (varsayılan: C:\\Users\\cagin\\Desktop\\New folder\\data.txt): ")
